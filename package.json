@@ -1,0 +1,35 @@
+{
+   "name": "keyboard",
+   "version": "1.0.0",
+   "description": "",
+   "main": "index.js",
+   "scripts": {
+      "build": "webpack",
+      "serve": "webpack serve --open",
+      "deploy": "npm run build;push-dir --dir=dist --branch=gh-pages --cleanup"
+   },
+   "repository": {
+      "type": "git",
+      "url": "git+https://github.com/AibekKen/keyboard.git"
+   },
+   "author": "Aibek",
+   "license": "ISC",
+   "bugs": {
+      "url": "https://github.com/AibekKen/keyboard/issues"
+   },
+   "homepage": "https://github.com/AibekKen/keyboard#readme",
+   "devDependencies": {
+      "css-loader": "^6.7.1",
+      "eslint": "^8.14.0",
+      "html-webpack-plugin": "^5.5.0",
+      "sass": "^1.51.0",
+      "sass-loader": "^12.6.0",
+      "style-loader": "^3.3.1",
+      "webpack": "^5.72.0",
+      "webpack-cli": "^4.9.2",
+      "webpack-dev-server": "^4.8.1"
+   },
+   "dependencies": {
+      "eslint-config-airbnb-base": "^15.0.0"
+   }
+}
