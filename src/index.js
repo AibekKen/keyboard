@@ -1,3 +1,4 @@
+import { createKButton } from './assets/scripts/кeyboardButton';
 import './assets/styles/style.scss';
 
 const container = document.createElement('div');
@@ -15,3 +16,5 @@ textareaWrapper.appendChild(textareaInput);
 const keyboardBody = document.createElement('div');
 keyboardBody.className = 'keyboard-body';
 container.appendChild(keyboardBody);
+
+createKButton(keyboardBody)

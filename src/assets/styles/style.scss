@@ -24,9 +24,43 @@ $fontfamily: Arial, "Helvetica Neue", Helvetica, sans-serif;
 
 .keyboard{
   &-body{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     width: 100%;
-    min-height: 300px;
+    margin: 0 -4px;
     padding: 10px;
     background: rgba(0, 0, 0, 0.39);
   }
+  &-button{
+    width: 40px;
+    height: 40px;
+    margin: 4px;
+    background: rgba(4, 37, 112, 0.437);
+    text-align: center;
+    line-height: 40px;
+  }
+}
+.special-btn{
+  background-color: rgba(17, 11, 171, 0.579);
+}
+.Backspace{
+  width: 118px;
+}
+.Delete,
+.Tab{
+  width: 55px;
+}
+.CapsLock,
+.Enter{
+  width: 103px;
+}
+.Shift{
+  width: 103px;
+}
+.Space{
+  width:328px;
+}
+.Control{
+  width: 55px;
 }
