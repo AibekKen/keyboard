@@ -53,18 +53,22 @@ function getCursorPos(input) {
 }
 
 let cursorPos = 0;
+let cursorEnd = 0;
+let selected = false;
 
 textareaWrapper.addEventListener('click', () => {
-  cursorPos = getCursorPos(textareaInput).start;
+  let { start, end } = getCursorPos(textareaInput);
+  cursorPos = start;
+  cursorEnd = end;
+  selected = false;
 });
 
-/*
-let selected = false;
 textareaInput.addEventListener('select', () => {
-  let { startPoint, endPoint } = getCursorPos(textareaInput);
+  let { start, end } = getCursorPos(textareaInput);
+  cursorPos = start;
+  cursorEnd = end;
   selected = true;
 });
-*/
 
 document.addEventListener('keydown', (e) => {
   textareaInput.focus();
@@ -72,7 +76,6 @@ document.addEventListener('keydown', (e) => {
   cursorPos += e.code === 'Backspace' ? -1 : +1;
   cursorPos = cursorPos < 0 ? 0 : cursorPos;
 })
-
 
 document.addEventListener('keyup', (e) => {
   document.querySelector('#' + e.code).classList.remove('active');
@@ -90,14 +93,24 @@ keyboardBody.addEventListener('mousedown', (e) => {
       cursorPos += 1;
     }
     if (e.target.classList.contains('Backspace')) {
-      textareaInput.value = value.length === cursorPos
-        ? value.slice(0, cursorPos - 1)
-        : value.slice(0, cursorPos - 1) + value.slice(cursorPos)
-      cursorPos -= 1;
+      if (!selected) {
+        textareaInput.value = value.length === cursorPos
+          ? value.slice(0, cursorPos - 1)
+          : value.slice(0, cursorPos - 1) + value.slice(cursorPos)
+        cursorPos -= 1;
+      } else {
+        textareaInput.value = value.slice(0, cursorPos) + value.slice(cursorEnd);
+        selected = false;
+      }
     }
     if (e.target.classList.contains('Delete')) {
-      if (value.length !== cursorPos) {
-        textareaInput.value = value.slice(0, cursorPos) + value.slice(cursorPos + 1);
+      if (!selected) {
+        if (value.length !== cursorPos) {
+          textareaInput.value = value.slice(0, cursorPos) + value.slice(cursorPos + 1);
+        }
+      } else {
+        textareaInput.value = value.slice(0, cursorPos) + value.slice(cursorEnd);
+        selected = false;
       }
     }
   }
