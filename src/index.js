@@ -28,10 +28,13 @@ document.addEventListener('keyup', (e) => {
 });
 
 keyboardBody.addEventListener('mousedown', (e) => {
-  console.log(e)
   if (e.target.classList.contains('keyboard-button')) {
     e.target.classList.add('active');
+    if (!e.target.classList.contains('special-btn')) {
+      textareaInput.value += e.target.textContent;
+    }
   }
+
 });
 
 keyboardBody.addEventListener('mouseup', (e) => {
