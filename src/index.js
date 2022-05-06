@@ -17,4 +17,13 @@ const keyboardBody = document.createElement('div');
 keyboardBody.className = 'keyboard-body';
 container.appendChild(keyboardBody);
 
-createKButton(keyboardBody)
+createKButton(keyboardBody);
+
+document.addEventListener('keydown', (e) => {
+  document.querySelector('#' + e.code).classList.add('active');
+});
+document.addEventListener('keyup', (e) => {
+  document.querySelector('#' + e.code).classList.remove('active');
+});
+
+

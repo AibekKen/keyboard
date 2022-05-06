@@ -328,13 +328,15 @@ export function createKButton(keyboard) {
     keyButton.className = 'keyboard-button';
     if (button.code === 'Space') {
       keyButton.classList.add(button.code);
+      keyButton.id = button.code;
     }
     if (button.code.includes('Key')) {
       keyButton.classList.add('keyboard-letter');
+      keyButton.id = button.code;
     } else if (button.key.length > 1) {
       keyButton.classList.add('special-btn');
       keyButton.classList.add(button.key);
-      keyButton.classList.add(button.code);
+      keyButton.id = button.code;
     }
     if (button.code.includes('ArrowLeft')) {
       keyButton.innerHTML = '&#8592';
@@ -350,6 +352,7 @@ export function createKButton(keyboard) {
       keyButton.innerHTML = 'Ctrl';
     } else {
       keyButton.textContent = button.key;
+      keyButton.id = button.code;
     }
     keyboard.appendChild(keyButton);
   });
