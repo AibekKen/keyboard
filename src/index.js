@@ -11,6 +11,7 @@ container.appendChild(textareaWrapper);
 
 const textareaInput = document.createElement('textarea');
 textareaInput.className = 'textarea-input';
+textareaInput.autofocus = true;
 textareaWrapper.appendChild(textareaInput);
 
 const keyboardBody = document.createElement('div');
@@ -18,37 +19,6 @@ keyboardBody.className = 'keyboard-body';
 container.appendChild(keyboardBody);
 
 createKButton(keyboardBody);
-
-
-document.addEventListener('keydown', (e) => {
-  document.querySelector('#' + e.code).classList.add('active');
-});
-document.addEventListener('keyup', (e) => {
-  document.querySelector('#' + e.code).classList.remove('active');
-});
-
-let cursorPos = 0;
-keyboardBody.addEventListener('mousedown', (e) => {
-  if (e.target.classList.contains('keyboard-button')) {
-    e.target.classList.add('active');
-    if (!e.target.classList.contains('special-btn')) {
-      let value = textareaInput.value;
-      textareaInput.value = value.length === cursorPos
-        ? value + e.target.textContent
-        : value.slice(0, cursorPos) + e.target.textContent + value.slice(cursorPos);
-      cursorPos += 1;
-    }
-  }
-});
-
-keyboardBody.addEventListener('mouseup', (e) => {
-  setTimeout(() => {
-    if (e.target.classList.contains('keyboard-button')) {
-      e.target.classList.remove('active');
-    }
-  }, 200);
-});
-
 function getCursorPos(input) {
   let pos;
   let len;
@@ -82,7 +52,65 @@ function getCursorPos(input) {
   return -1;
 }
 
+let cursorPos = 0;
+
 textareaWrapper.addEventListener('click', () => {
   cursorPos = getCursorPos(textareaInput).start;
-  console.log(cursorPos);
 });
+
+/*
+let selected = false;
+textareaInput.addEventListener('select', () => {
+  let { startPoint, endPoint } = getCursorPos(textareaInput);
+  selected = true;
+});
+*/
+
+document.addEventListener('keydown', (e) => {
+  textareaInput.focus();
+  document.querySelector('#' + e.code).classList.add('active');
+  cursorPos += e.code === 'Backspace' ? -1 : +1;
+  cursorPos = cursorPos < 0 ? 0 : cursorPos;
+})
+
+
+document.addEventListener('keyup', (e) => {
+  document.querySelector('#' + e.code).classList.remove('active');
+});
+
+keyboardBody.addEventListener('mousedown', (e) => {
+  textareaInput.focus();
+  let value = textareaInput.value;
+  if (e.target.classList.contains('keyboard-button')) {
+    e.target.classList.add('active');
+    if (!e.target.classList.contains('special-btn')) {
+      textareaInput.value = value.length === cursorPos
+        ? value + e.target.textContent
+        : value.slice(0, cursorPos) + e.target.textContent + value.slice(cursorPos);
+      cursorPos += 1;
+    }
+    if (e.target.classList.contains('Backspace')) {
+      textareaInput.value = value.length === cursorPos
+        ? value.slice(0, cursorPos - 1)
+        : value.slice(0, cursorPos - 1) + value.slice(cursorPos)
+      cursorPos -= 1;
+    }
+    if (e.target.classList.contains('Delete')) {
+      if (value.length !== cursorPos) {
+        textareaInput.value = value.slice(0, cursorPos) + value.slice(cursorPos + 1);
+      }
+    }
+  }
+});
+
+keyboardBody.addEventListener('mouseup', (e) => {
+  setTimeout(() => {
+    if (e.target.classList.contains('keyboard-button')) {
+      e.target.classList.remove('active');
+    }
+  }, 200);
+});
+
+
+
+
