@@ -11,6 +11,7 @@ container.appendChild(textareaWrapper);
 
 const textareaInput = document.createElement('textarea');
 textareaInput.className = 'textarea-input';
+textareaInput.autofocus = true;
 textareaWrapper.appendChild(textareaInput);
 
 const keyboardBody = document.createElement('div');
@@ -26,4 +27,17 @@ document.addEventListener('keyup', (e) => {
   document.querySelector('#' + e.code).classList.remove('active');
 });
 
+keyboardBody.addEventListener('mousedown', (e) => {
+  console.log(e)
+  if (e.target.classList.contains('keyboard-button')) {
+    e.target.classList.add('active');
+  }
+});
 
+keyboardBody.addEventListener('mouseup', (e) => {
+  setTimeout(() => {
+    if (e.target.classList.contains('keyboard-button')) {
+      e.target.classList.remove('active');
+    }
+  }, 200);
+});
