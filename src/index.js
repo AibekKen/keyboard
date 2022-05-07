@@ -19,6 +19,7 @@ keyboardBody.className = 'keyboard-body';
 container.appendChild(keyboardBody);
 
 createKButton(keyboardBody);
+
 function getCursorPos(input) {
   let pos;
   let len;
@@ -52,14 +53,29 @@ function getCursorPos(input) {
   return -1;
 }
 
+function setCaretPosition(input, start, end) {
+  if (input.setSelectionRange) {
+    input.focus();
+    input.setSelectionRange(start, end);
+  } else if (input.createTextRange) {
+    let range = input.createTextRange();
+    range.collapse(true);
+    range.moveEnd('character', end);
+    range.moveStart('character', start);
+    range.select();
+  }
+}
+
 let cursorPos = 0;
 let cursorEnd = 0;
 let selected = false;
 
+//!При клике не позиция курсора не фиксирует на месте клика!!
 textareaWrapper.addEventListener('click', () => {
   let { start, end } = getCursorPos(textareaInput);
   cursorPos = start;
   cursorEnd = end;
+  console.log(cursorPos, end)
   selected = false;
 });
 
@@ -71,18 +87,29 @@ textareaInput.addEventListener('select', () => {
 });
 
 document.addEventListener('keydown', (e) => {
-  textareaInput.focus();
   document.querySelector('#' + e.code).classList.add('active');
-  cursorPos += e.code === 'Backspace' ? -1 : +1;
-  cursorPos = cursorPos < 0 ? 0 : cursorPos;
-})
+  if (e.key.length < 2) {
+    textareaInput.setSelectionRange(cursorPos, cursorPos);
+    textareaInput.focus();
+    cursorPos += 1;
+  }
+  if (e.code === 'Backspace' || e.code === 'ArrowLeft') {
+    cursorPos -= 1;
+    cursorPos = cursorPos < 0 ? 0 : cursorPos;
+  }
+  if (e.code === 'ArrowRight' && cursorPos !== textareaInput.value.length) {
+    cursorPos += 1;
+
+  }
+
+  console.log(cursorPos);
+});
 
 document.addEventListener('keyup', (e) => {
   document.querySelector('#' + e.code).classList.remove('active');
 });
 
 keyboardBody.addEventListener('mousedown', (e) => {
-  textareaInput.focus();
   let value = textareaInput.value;
   if (e.target.classList.contains('keyboard-button')) {
     e.target.classList.add('active');
@@ -93,14 +120,16 @@ keyboardBody.addEventListener('mousedown', (e) => {
       cursorPos += 1;
     }
     if (e.target.classList.contains('Backspace')) {
-      if (!selected) {
-        textareaInput.value = value.length === cursorPos
-          ? value.slice(0, cursorPos - 1)
-          : value.slice(0, cursorPos - 1) + value.slice(cursorPos)
-        cursorPos -= 1;
-      } else {
-        textareaInput.value = value.slice(0, cursorPos) + value.slice(cursorEnd);
-        selected = false;
+      if (cursorPos !== 0) {
+        if (!selected) {
+          textareaInput.value = value.length === cursorPos
+            ? value.slice(0, cursorPos - 1)
+            : value.slice(0, cursorPos - 1) + value.slice(cursorPos)
+          cursorPos -= 1;
+        } else {
+          textareaInput.value = value.slice(0, cursorPos) + value.slice(cursorEnd);
+          selected = false;
+        }
       }
     }
     if (e.target.classList.contains('Delete')) {
@@ -113,14 +142,21 @@ keyboardBody.addEventListener('mousedown', (e) => {
         selected = false;
       }
     }
+    if (e.target.classList.contains('ArrowLeft')) {
+      cursorPos -= 1;
+    }
+    if (e.target.classList.contains('ArrowRight')) {
+      cursorPos += 1;
+    }
   }
+  console.log(cursorPos);
 });
 
-keyboardBody.addEventListener('mouseup', (e) => {
+document.addEventListener('mouseup', () => {
+  textareaInput.setSelectionRange(cursorPos, cursorPos);
+  textareaInput.focus();
   setTimeout(() => {
-    if (e.target.classList.contains('keyboard-button')) {
-      e.target.classList.remove('active');
-    }
+    document.querySelectorAll('.keyboard-button').forEach(button => button.classList.remove('active'));
   }, 200);
 });
 
