@@ -90,64 +90,77 @@ export let KeyboardButtonsArr = [
   {
     key: 'q',
     code: 'KeyQ',
-    which: 81
+    which: 81,
+    keyRu: 'й'
   },
   {
     key: 'w',
     code: 'KeyW',
-    which: 87
+    which: 87,
+    keyRu: 'ц'
   },
   {
     key: 'e',
     code: 'KeyE',
-    which: 69
+    which: 69,
+    keyRu: 'у'
+
   },
   {
     key: 'r',
     code: 'KeyR',
-    which: 82
+    which: 82,
+    keyRu: 'к'
   },
   {
     key: 't',
     code: 'KeyT',
-    which: 84
+    which: 84,
+    keyRu: 'е'
   },
   {
     key: 'y',
     code: 'KeyY',
-    which: 89
+    which: 89,
+    keyRu: 'н'
   },
   {
     key: 'u',
     code: 'KeyU',
-    which: 85
+    which: 85,
+    keyRu: 'г'
   },
   {
     key: 'i',
     code: 'KeyI',
-    which: 73
+    which: 73,
+    keyRu: 'ш'
   },
   {
     key: 'o',
     code: 'KeyO',
-    which: 79
+    which: 79,
+    keyRu: 'щ'
   },
   {
     key: 'p',
     code: 'KeyP',
-    which: 80
+    which: 80,
+    keyRu: 'з'
   },
   {
     key: '[',
     code: 'BracketLeft',
     which: 219,
-    shiftKey: '{'
+    shiftKey: '{',
+    keyRu: 'х'
   },
   {
     key: ']',
     code: 'BracketRight',
     which: 221,
-    shiftKey: '}'
+    shiftKey: '}',
+    keyRu: 'ъ'
   },
   {
     key: '\\',
@@ -168,59 +181,70 @@ export let KeyboardButtonsArr = [
   {
     key: 'a',
     code: 'KeyA',
-    which: 65
+    which: 65,
+    keyRu: 'ф'
   },
   {
     key: 's',
     code: 'KeyS',
-    which: 83
+    which: 83,
+    keyRu: 'ы'
   },
   {
     key: 'd',
     code: 'KeyD',
-    which: 68
+    which: 68,
+    keyRu: 'в'
   },
   {
     key: 'f',
     code: 'KeyF',
-    which: 70
+    which: 70,
+    keyRu: 'а'
   },
   {
     key: 'g',
     code: 'KeyG',
-    which: 71
+    which: 71,
+    keyRu: 'п'
   },
   {
     key: 'h',
     code: 'KeyH',
-    which: 72
+    which: 72,
+    keyRu: 'р'
   },
   {
     key: 'j',
     code: 'KeyJ',
-    which: 74
+    which: 74,
+    keyRu: 'о'
   },
   {
     key: 'k',
     code: 'KeyK',
-    which: 75
+    which: 75,
+    keyRu: 'л'
   },
   {
     key: 'l',
     code: 'KeyL',
-    which: 76
+    which: 76,
+    keyRu: 'д'
   },
   {
     key: ';',
     code: 'Semicolon',
     which: 186,
-    shiftKey: ':'
+    shiftKey: ':',
+    keyRu: 'ж'
   },
   {
     key: "'",
     code: 'Quote',
     which: 222,
-    shiftKey: '"'
+    shiftKey: '"',
+    keyRu: 'э'
   },
   {
     key: 'Enter',
@@ -235,55 +259,65 @@ export let KeyboardButtonsArr = [
   {
     key: 'z',
     code: 'KeyZ',
-    which: 90
+    which: 90,
+    keyRu: 'я'
   },
   {
     key: 'x',
     code: 'KeyX',
-    which: 88
+    which: 88,
+    keyRu: 'ч'
   },
   {
     key: 'c',
     code: 'KeyC',
-    which: 67
+    which: 67,
+    keyRu: 'с'
   },
   {
     key: 'v',
     code: 'KeyV',
-    which: 86
+    which: 86,
+    keyRu: 'м'
   },
   {
     key: 'b',
     code: 'KeyB',
-    which: 66
+    which: 66,
+    keyRu: 'и'
   },
   {
     key: 'n',
     code: 'KeyN',
-    which: 78
+    which: 78,
+    keyRu: 'т'
   },
   {
     key: 'm',
     code: 'KeyM',
-    which: 77
+    which: 77,
+    keyRu: 'ь'
   },
   {
     key: ',',
     code: 'Comma',
     which: 188,
-    shiftKey: '<'
+    shiftKey: '<',
+    keyRu: 'б'
   },
   {
     key: '.',
     code: 'Period',
     which: 190,
-    shiftKey: '>'
+    shiftKey: '>',
+    keyRu: 'ю'
   },
   {
     key: '/',
     code: 'Slash',
     which: 191,
-    shiftKey: '?'
+    shiftKey: '?',
+    keyRu: '.'
   },
   {
     key: 'ArrowUp',
@@ -341,6 +375,7 @@ export let KeyboardButtonsArr = [
     which: 17
   }
 ];
+
 export function createKButton(keyboard, capsLock) {
   let keyButton = '';
   KeyboardButtonsArr.forEach((button) => {

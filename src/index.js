@@ -23,7 +23,9 @@ if (localStorage.capsLock !== undefined) {
 } else {
   capsLock = false;
 }
-createKButton(keyboardBody, capsLock);
+createKButton(keyboardBody);
+
+let lang = 'en';
 
 function getCursorPos(input) {
   let pos;
@@ -58,20 +60,7 @@ function getCursorPos(input) {
   return -1;
 }
 
-function setCaretPosition(input, start, end) {
-  if (input.setSelectionRange) {
-    input.focus();
-    input.setSelectionRange(start, end);
-  } else if (input.createTextRange) {
-    let range = input.createTextRange();
-    range.collapse(true);
-    range.moveEnd('character', end);
-    range.moveStart('character', start);
-    range.select();
-  }
-}
-
-const buttons = document.querySelectorAll('.keyboard-button');
+let buttons = document.querySelectorAll('.keyboard-button');
 let cursorPos = 0;
 let cursorEnd = 0;
 let selected = false;
@@ -90,20 +79,37 @@ textareaInput.addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', (e) => {
-  console.log(shiftMode);
+  if (e.ctrlKey && e.altKey) {
+    if (lang === 'en') {
+      lang = 'ru';
+      buttons.forEach((el, i) => {
+        if (KeyboardButtonsArr[i].keyRu !== undefined) {
+          buttons[i].textContent = KeyboardButtonsArr[i].keyRu;
+        }
+      });
+    } else {
+      lang = 'en';
+      buttons.forEach((el, i) => {
+        if (KeyboardButtonsArr[i].keyRu !== undefined) {
+          buttons[i].textContent = KeyboardButtonsArr[i].key;
+        }
+      });
+    }
+    console.log(lang);
+  }
   if (shiftMode) {
-    KeyboardButtonsArr.forEach((el, i) => {
-      if (el.shiftKey) {
-        if (el.key === e.key) {
+    KeyboardButtonsArr.forEach((k) => {
+      if (k.shiftKey) {
+        if (k.key === e.key) {
           e.preventDefault();
           let value = textareaInput.value;
           if (!selected) {
             textareaInput.value = value.length === cursorPos
-              ? value + el.shiftKey
-              : value.slice(0, cursorPos) + el.shiftKey + value.slice(cursorPos);
+              ? value + k.shiftKey
+              : value.slice(0, cursorPos) + k.shiftKey + value.slice(cursorPos);
             cursorPos += 1;
           } else {
-            textareaInput.value = value.slice(0, cursorPos) + el.shiftKey + value.slice(cursorEnd);
+            textareaInput.value = value.slice(0, cursorPos) + k.shiftKey + value.slice(cursorEnd);
             selected = false;
             cursorPos += 1;
           }
@@ -114,13 +120,20 @@ document.addEventListener('keydown', (e) => {
   const letters = document.querySelectorAll('.keyboard-letter');
   if (e.key === 'Shift') {
     shiftMode = true;
-    KeyboardButtonsArr.forEach((key, i) => {
-      if (key.shiftKey) {
-        buttons[i].textContent = key.shiftKey;
-      }
-    });
+    if (lang === 'en') {
+      KeyboardButtonsArr.forEach((key, i) => {
+        if (key.shiftKey) {
+          buttons[i].textContent = key.shiftKey;
+        }
+      });
+    } else {
+      KeyboardButtonsArr.forEach((key, i) => {
+        if (key.shiftKey && !key.keyRu) {
+          buttons[i].textContent = key.shiftKey;
+        }
+      });
+    }
   }
-
   capsLock = e.getModifierState('CapsLock');
   localStorage.capsLock = capsLock;
 
@@ -157,14 +170,21 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('keyup', (e) => {
-
   if (e.key === 'Shift') {
     shiftMode = true;
-    KeyboardButtonsArr.forEach((key, i) => {
-      if (key.shiftKey) {
-        buttons[i].textContent = key.key;
-      }
-    });
+    if (lang === 'en') {
+      KeyboardButtonsArr.forEach((key, i) => {
+        if (key.shiftKey) {
+          buttons[i].textContent = key.key;
+        }
+      });
+    } else {
+      KeyboardButtonsArr.forEach((key, i) => {
+        if (key.shiftKey && !key.keyRu) {
+          buttons[i].textContent = key.key;
+        }
+      });
+    }
   }
   if (e.code === 'ArrowUp' && cursorPos !== 0) {
     let { start, end } = getCursorPos(textareaInput);
@@ -176,7 +196,6 @@ document.addEventListener('keyup', (e) => {
     let { start, end } = getCursorPos(textareaInput);
     cursorPos = start;
     cursorEnd = end;
-    console.log(cursorPos, cursorEnd)
     selected = false;
   }
   document.querySelector('#' + e.code).classList.remove('active');
@@ -237,12 +256,11 @@ keyboardBody.addEventListener('mousedown', (e) => {
       localStorage.capsLock = capsLock;
       const letters = document.querySelectorAll('.keyboard-letter');
       letters.forEach((letter) => {
-        let content = letter.textContent;
         letter.textContent = capsLock ? content.toUpperCase() : content.toLowerCase();
       });
     }
     if (e.target.classList.contains('Tab')) {
-      e.preventDefault()
+      e.preventDefault();
       textareaInput.value = value.length === cursorPos
         ? value + '    '
         : value.slice(0, cursorPos) + '   ' + value.slice(cursorPos);
@@ -250,11 +268,19 @@ keyboardBody.addEventListener('mousedown', (e) => {
     }
     if (e.target.classList.contains('Shift')) {
       shiftMode = true;
-      KeyboardButtonsArr.forEach((key, i) => {
-        if (key.shiftKey) {
-          buttons[i].textContent = key.shiftKey;
-        }
-      });
+      if (lang === 'en') {
+        KeyboardButtonsArr.forEach((key, i) => {
+          if (key.shiftKey) {
+            buttons[i].textContent = key.shiftKey;
+          }
+        });
+      } else {
+        KeyboardButtonsArr.forEach((key, i) => {
+          if (key.shiftKey && !key.keyRu) {
+            buttons[i].textContent = key.shiftKey;
+          }
+        });
+      }
     }
     //! Выделение нужно доработать, когда уменшаешь область выделение
     if (e.target.classList.contains('ArrowLeft')) {
@@ -300,14 +326,22 @@ keyboardBody.addEventListener('mousedown', (e) => {
   console.log(cursorPos, cursorEnd);
 });
 
-document.addEventListener('mouseup', (e) => {
+document.addEventListener('mouseup', () => {
   if (shiftMode) {
     shiftMode = false;
-    KeyboardButtonsArr.forEach((key, i) => {
-      if (key.shiftKey) {
-        buttons[i].textContent = key.key;
-      }
-    });
+    if (lang === 'en') {
+      KeyboardButtonsArr.forEach((key, i) => {
+        if (key.shiftKey) {
+          buttons[i].textContent = key.key;
+        }
+      });
+    } else {
+      KeyboardButtonsArr.forEach((key, i) => {
+        if (key.shiftKey && !key.keyRu) {
+          buttons[i].textContent = key.key;
+        }
+      });
+    }
   }
   setTimeout(() => {
     if (!selected) {
