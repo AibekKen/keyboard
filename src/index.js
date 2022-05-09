@@ -25,7 +25,7 @@ if (localStorage.capsLock !== undefined) {
 }
 
 const description = document.createElement('div');
-description.innerHTML = `<p class='description'>Операционная система: Windows</p><p class='description'>Переключение языка: CTRL+ALT</p>`
+description.innerHTML = '<p class=\'description\'>Операционная система: Windows</p><p class=\'description\'>Переключение языка: CTRL+ALT</p>';
 container.appendChild(description);
 
 createKButton(keyboardBody);
@@ -85,7 +85,6 @@ textareaInput.addEventListener('click', () => {
   } else {
     selected = false;
   }
-  console.log(start, end);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -100,10 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('keydown', (e) => {
-  lang = localStorage.getItem('lang')
-  console.log(lang)
+  lang = localStorage.getItem('lang');
   if (/[а-яёЧЯ.* +?^ ${}() | [\]\\]/i.test(e.key)) {
-    console.log(selected);
     e.preventDefault();
     let content = document.querySelector('#' + e.code).textContent;
     let value = textareaInput.value;
@@ -260,7 +257,6 @@ document.addEventListener('keydown', (e) => {
       : value.slice(0, cursorPos) + '   ' + value.slice(cursorPos);
     cursorPos += 4;
   }
-  console.log(cursorPos);
 });
 
 document.addEventListener('keyup', (e) => {
@@ -309,8 +305,7 @@ document.addEventListener('keyup', (e) => {
 });
 
 keyboardBody.addEventListener('mousedown', (e) => {
-  lang = localStorage.getItem('lang')
-  console.log(lang)
+  lang = localStorage.getItem('lang');
   let value = textareaInput.value;
   if (e.target.classList.contains('keyboard-button')) {
     let content = e.target.textContent;
@@ -364,7 +359,7 @@ keyboardBody.addEventListener('mousedown', (e) => {
       }
       localStorage.setItem('capsLock', capsLock);
       buttons.forEach((key, i) => {
-        let char = buttons[i].textContent
+        let char = buttons[i].textContent;
         if (!key.classList.contains('special-btn')) {
           buttons[i].textContent = capsLock ? char.toUpperCase() : char.toLowerCase();
         }
@@ -428,10 +423,8 @@ keyboardBody.addEventListener('mousedown', (e) => {
     }
     if (e.target.classList.contains('ArrowUp')) {
       let contentN = textareaInput.value.slice(0, cursorPos);
-      let n = 0;
       contentN = contentN.split('').reverse();
-      console.log(contentN)
-      for (let i = 0; i < contentN.length; i++) {
+      for (let i = 0; i < contentN.length; i += 1) {
         if (contentN[i] === '\n') {
           cursorPos -= i + 1;
           return;
@@ -441,8 +434,7 @@ keyboardBody.addEventListener('mousedown', (e) => {
     if (e.target.classList.contains('ArrowDown')) {
       let contentN = textareaInput.value.slice(cursorPos);
       contentN = contentN.split('');
-      console.log(contentN)
-      for (let i = 0; i < contentN.length; i++) {
+      for (let i = 0; i < contentN.length; i += 1) {
         if (contentN[i] === '\n') {
           cursorPos += i + 1;
           return;
