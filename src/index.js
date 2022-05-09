@@ -112,6 +112,14 @@ document.addEventListener('keydown', (e) => {
   if (e.code === 'ArrowRight' && cursorPos !== textareaInput.value.length) {
     cursorPos += 1;
   }
+  if (e.code === 'Tab') {
+    e.preventDefault()
+    let value = textareaInput.value;
+    textareaInput.value = value.length === cursorPos
+      ? value + '    '
+      : value.slice(0, cursorPos) + '   ' + value.slice(cursorPos);
+    cursorPos += 4;
+  }
   console.log(cursorPos);
 });
 
@@ -190,6 +198,13 @@ keyboardBody.addEventListener('mousedown', (e) => {
         let content = letter.textContent;
         letter.textContent = capsLock ? content.toUpperCase() : content.toLowerCase();
       });
+    }
+    if (e.target.classList.contains('Tab')) {
+      e.preventDefault()
+      textareaInput.value = value.length === cursorPos
+        ? value + '    '
+        : value.slice(0, cursorPos) + '   ' + value.slice(cursorPos);
+      cursorPos += 4;
     }
     //! Выделение нужно доработать, когда уменшаешь область выделение
     if (e.target.classList.contains('ArrowLeft')) {
