@@ -23,6 +23,11 @@ if (localStorage.capsLock !== undefined) {
 } else {
   capsLock = false;
 }
+
+const description = document.createElement('div');
+description.innerHTML = `<p class='description'>Операционная система: Windows</p><p class='description'>Переключение языка: CTRL+ALT</p>`
+container.appendChild(description);
+
 createKButton(keyboardBody);
 
 let lang;

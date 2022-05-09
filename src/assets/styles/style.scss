@@ -3,7 +3,7 @@ $fontfamily: Arial, "Helvetica Neue", Helvetica, sans-serif;
 @import 'nullstyle.scss';
 
 .container{
-  max-width: 800px;
+  width: 800px;
   padding: 30px 15px;
   margin: 0 auto;
 }
@@ -81,4 +81,8 @@ $fontfamily: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 .Control{
   width: 55px;
+}
+.description{
+  font-weight: 700;
+  margin: 10px 0;
 }
