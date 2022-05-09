@@ -137,11 +137,9 @@ document.addEventListener('keydown', (e) => {
             textareaInput.value = value.length === cursorPos
               ? value + content
               : value.slice(0, cursorPos) + content + value.slice(cursorPos);
-            cursorPos += 1;
           } else {
             textareaInput.value = value.slice(0, cursorPos) + content + value.slice(cursorEnd);
             selected = false;
-            cursorPos += 1;
           }
         }
       }
@@ -177,11 +175,9 @@ document.addEventListener('keydown', (e) => {
               textareaInput.value = value.length === cursorPos
                 ? value + k.shiftKey
                 : value.slice(0, cursorPos) + k.shiftKey + value.slice(cursorPos);
-              cursorPos += 1;
             } else {
               textareaInput.value = value.slice(0, cursorPos) + k.shiftKey + value.slice(cursorEnd);
               selected = false;
-              cursorPos += 1;
             }
           }
         }
