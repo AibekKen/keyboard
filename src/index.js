@@ -70,7 +70,6 @@ let cursorPos = 0;
 let cursorEnd = 0;
 let selected = false;
 
-//!При клике не позиция курсора не фиксирует на месте клика!!
 textareaWrapper.addEventListener('click', () => {
   let { start, end } = getCursorPos(textareaInput);
   cursorPos = start;
@@ -153,9 +152,9 @@ keyboardBody.addEventListener('mousedown', (e) => {
 });
 
 document.addEventListener('mouseup', () => {
-  textareaInput.setSelectionRange(cursorPos, cursorPos);
-  textareaInput.focus();
   setTimeout(() => {
+    textareaInput.setSelectionRange(cursorPos, cursorPos);
+    textareaInput.focus();
     document.querySelectorAll('.keyboard-button').forEach(button => button.classList.remove('active'));
   }, 200);
 });
