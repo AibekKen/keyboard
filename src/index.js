@@ -147,6 +147,12 @@ keyboardBody.addEventListener('mousedown', (e) => {
     if (e.target.classList.contains('ArrowRight')) {
       cursorPos += 1;
     }
+    if (e.target.classList.contains('Enter')) {
+      textareaInput.value = value.length === cursorPos
+        ? value + '\n'
+        : value.slice(0, cursorPos) + '\n' + value.slice(cursorPos);
+      cursorPos += 1;
+    }
   }
   console.log(cursorPos);
 });
