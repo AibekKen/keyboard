@@ -1,4 +1,4 @@
-export function createKButton(keyboard) {
+export function createKButton(keyboard, capsLock) {
   let KeyboardButtonsArr = [
     {
       key: '`',
@@ -351,7 +351,7 @@ export function createKButton(keyboard) {
     } else if (button.code.includes('Control')) {
       keyButton.innerHTML = 'Ctrl';
     } else {
-      keyButton.textContent = button.key;
+      keyButton.textContent = capsLock ? button.key.toUpperCase() : button.key;
       keyButton.id = button.code;
     }
     keyboard.appendChild(keyButton);

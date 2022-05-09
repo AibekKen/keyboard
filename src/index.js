@@ -18,10 +18,10 @@ const keyboardBody = document.createElement('div');
 keyboardBody.className = 'keyboard-body';
 container.appendChild(keyboardBody);
 let capsLock;
-if (localStorage.capsLock) {
+if (localStorage.capsLock !== undefined) {
   capsLock = localStorage.capsLocks;
 } else {
-  capsLock = true;
+  capsLock = false;
 }
 createKButton(keyboardBody, capsLock);
 
@@ -88,15 +88,13 @@ textareaInput.addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', (e) => {
-  if (e.code === 'CapsLock') {
-    capsLock = e.getModifierState('CapsLock');
-    localStorage.capsLock = capsLock;
-    const letters = document.querySelectorAll('.keyboard-letter');
-    letters.forEach((letter) => {
-      let content = letter.textContent;
-      letter.textContent = capsLock ? content.toUpperCase() : content.toLowerCase();
-    });
-  }
+  capsLock = e.getModifierState('CapsLock');
+  localStorage.capsLock = capsLock;
+  const letters = document.querySelectorAll('.keyboard-letter');
+  letters.forEach((letter) => {
+    let content = letter.textContent;
+    letter.textContent = capsLock ? content.toUpperCase() : content.toLowerCase();
+  });
   if (cursorPos === cursorEnd) {
     textareaInput.setSelectionRange(cursorPos, cursorPos);
     textareaInput.focus();
@@ -181,7 +179,11 @@ keyboardBody.addEventListener('mousedown', (e) => {
       }
     }
     if (e.target.classList.contains('CapsLock')) {
-      capsLock = e.getModifierState('CapsLock');
+      if (capsLock) {
+        capsLock = false;
+      } else {
+        capsLock = true;
+      }
       localStorage.capsLock = capsLock;
       const letters = document.querySelectorAll('.keyboard-letter');
       letters.forEach((letter) => {
