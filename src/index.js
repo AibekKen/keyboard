@@ -17,8 +17,13 @@ textareaWrapper.appendChild(textareaInput);
 const keyboardBody = document.createElement('div');
 keyboardBody.className = 'keyboard-body';
 container.appendChild(keyboardBody);
-
-createKButton(keyboardBody);
+let capsLock;
+if (localStorage.capsLock) {
+  capsLock = localStorage.capsLocks;
+} else {
+  capsLock = true;
+}
+createKButton(keyboardBody, capsLock);
 
 function getCursorPos(input) {
   let pos;
@@ -83,6 +88,15 @@ textareaInput.addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', (e) => {
+  if (e.code === 'CapsLock') {
+    capsLock = e.getModifierState('CapsLock');
+    localStorage.capsLock = capsLock;
+    const letters = document.querySelectorAll('.keyboard-letter');
+    letters.forEach((letter) => {
+      let content = letter.textContent;
+      letter.textContent = capsLock ? content.toUpperCase() : content.toLowerCase();
+    });
+  }
   if (cursorPos === cursorEnd) {
     textareaInput.setSelectionRange(cursorPos, cursorPos);
     textareaInput.focus();
@@ -124,12 +138,18 @@ keyboardBody.addEventListener('mousedown', (e) => {
   let value = textareaInput.value;
   if (e.target.classList.contains('keyboard-button')) {
     let content = e.target.textContent;
+    if (e.shiftKey && !e.getModifierState('CapsLock')) {
+      content = content.toUpperCase();
+    }
+    if (e.shiftKey && e.getModifierState('CapsLock')) {
+      content = content.toLowerCase();
+    }
     e.target.classList.add('active');
     if (!e.target.classList.contains('special-btn')) {
       if (!selected) {
         textareaInput.value = value.length === cursorPos
-          ? value + e.target.textContent
-          : value.slice(0, cursorPos) + e.target.textContent + value.slice(cursorPos);
+          ? value + content
+          : value.slice(0, cursorPos) + content + value.slice(cursorPos);
         cursorPos += 1;
       } else {
         textareaInput.value = value.slice(0, cursorPos) + content + value.slice(cursorEnd);
@@ -159,6 +179,15 @@ keyboardBody.addEventListener('mousedown', (e) => {
         textareaInput.value = value.slice(0, cursorPos) + value.slice(cursorEnd);
         selected = false;
       }
+    }
+    if (e.target.classList.contains('CapsLock')) {
+      capsLock = e.getModifierState('CapsLock');
+      localStorage.capsLock = capsLock;
+      const letters = document.querySelectorAll('.keyboard-letter');
+      letters.forEach((letter) => {
+        let content = letter.textContent;
+        letter.textContent = capsLock ? content.toUpperCase() : content.toLowerCase();
+      });
     }
     //! Выделение нужно доработать, когда уменшаешь область выделение
     if (e.target.classList.contains('ArrowLeft')) {
