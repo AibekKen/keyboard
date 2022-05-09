@@ -1,4 +1,4 @@
-import { createKButton } from './assets/scripts/кeyboardButton';
+import { createKButton, KeyboardButtonsArr } from './assets/scripts/кeyboardButton';
 import './assets/styles/style.scss';
 
 const container = document.createElement('div');
@@ -71,9 +71,11 @@ function setCaretPosition(input, start, end) {
   }
 }
 
+const buttons = document.querySelectorAll('.keyboard-button');
 let cursorPos = 0;
 let cursorEnd = 0;
 let selected = false;
+let shiftMode = false;
 
 textareaInput.addEventListener('click', () => {
   let { start, end } = getCursorPos(textareaInput);
@@ -88,9 +90,40 @@ textareaInput.addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', (e) => {
+  console.log(shiftMode);
+  if (shiftMode) {
+    KeyboardButtonsArr.forEach((el, i) => {
+      if (el.shiftKey) {
+        if (el.key === e.key) {
+          e.preventDefault();
+          let value = textareaInput.value;
+          if (!selected) {
+            textareaInput.value = value.length === cursorPos
+              ? value + el.shiftKey
+              : value.slice(0, cursorPos) + el.shiftKey + value.slice(cursorPos);
+            cursorPos += 1;
+          } else {
+            textareaInput.value = value.slice(0, cursorPos) + el.shiftKey + value.slice(cursorEnd);
+            selected = false;
+            cursorPos += 1;
+          }
+        }
+      }
+    });
+  }
+  const letters = document.querySelectorAll('.keyboard-letter');
+  if (e.key === 'Shift') {
+    shiftMode = true;
+    KeyboardButtonsArr.forEach((key, i) => {
+      if (key.shiftKey) {
+        buttons[i].textContent = key.shiftKey;
+      }
+    });
+  }
+
   capsLock = e.getModifierState('CapsLock');
   localStorage.capsLock = capsLock;
-  const letters = document.querySelectorAll('.keyboard-letter');
+
   letters.forEach((letter) => {
     let content = letter.textContent;
     letter.textContent = capsLock ? content.toUpperCase() : content.toLowerCase();
@@ -113,7 +146,7 @@ document.addEventListener('keydown', (e) => {
     cursorPos += 1;
   }
   if (e.code === 'Tab') {
-    e.preventDefault()
+    e.preventDefault();
     let value = textareaInput.value;
     textareaInput.value = value.length === cursorPos
       ? value + '    '
@@ -124,6 +157,15 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('keyup', (e) => {
+
+  if (e.key === 'Shift') {
+    shiftMode = true;
+    KeyboardButtonsArr.forEach((key, i) => {
+      if (key.shiftKey) {
+        buttons[i].textContent = key.key;
+      }
+    });
+  }
   if (e.code === 'ArrowUp' && cursorPos !== 0) {
     let { start, end } = getCursorPos(textareaInput);
     cursorPos = start;
@@ -206,6 +248,14 @@ keyboardBody.addEventListener('mousedown', (e) => {
         : value.slice(0, cursorPos) + '   ' + value.slice(cursorPos);
       cursorPos += 4;
     }
+    if (e.target.classList.contains('Shift')) {
+      shiftMode = true;
+      KeyboardButtonsArr.forEach((key, i) => {
+        if (key.shiftKey) {
+          buttons[i].textContent = key.shiftKey;
+        }
+      });
+    }
     //! Выделение нужно доработать, когда уменшаешь область выделение
     if (e.target.classList.contains('ArrowLeft')) {
       if (!e.shiftKey) {
@@ -250,7 +300,15 @@ keyboardBody.addEventListener('mousedown', (e) => {
   console.log(cursorPos, cursorEnd);
 });
 
-document.addEventListener('mouseup', () => {
+document.addEventListener('mouseup', (e) => {
+  if (shiftMode) {
+    shiftMode = false;
+    KeyboardButtonsArr.forEach((key, i) => {
+      if (key.shiftKey) {
+        buttons[i].textContent = key.key;
+      }
+    });
+  }
   setTimeout(() => {
     if (!selected) {
       textareaInput.setSelectionRange(cursorPos, cursorPos);
