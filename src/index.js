@@ -70,24 +70,27 @@ let cursorPos = 0;
 let cursorEnd = 0;
 let selected = false;
 
-textareaWrapper.addEventListener('click', () => {
+textareaInput.addEventListener('click', () => {
   let { start, end } = getCursorPos(textareaInput);
   cursorPos = start;
   cursorEnd = end;
-  console.log(cursorPos, end)
-  selected = false;
-});
-
-textareaInput.addEventListener('select', () => {
-  let { start, end } = getCursorPos(textareaInput);
-  cursorPos = start;
-  cursorEnd = end;
-  selected = true;
+  if (cursorPos !== cursorEnd) {
+    selected = true;
+  } else {
+    selected = false;
+  }
+  console.log(start, end);
 });
 
 document.addEventListener('keydown', (e) => {
+  if (cursorPos === cursorEnd) {
+    textareaInput.setSelectionRange(cursorPos, cursorPos);
+    textareaInput.focus();
+    selected = false;
+  }
+  textareaInput.focus();
   document.querySelector('#' + e.code).classList.add('active');
-  if (e.key.length < 2 || e.code === 'Enter') {
+  if (e.key.length < 3 || e.code === 'Enter') {
     cursorPos += 1;
   }
   if (e.code === 'Backspace' || e.code === 'ArrowLeft') {
@@ -120,12 +123,19 @@ document.addEventListener('keyup', (e) => {
 keyboardBody.addEventListener('mousedown', (e) => {
   let value = textareaInput.value;
   if (e.target.classList.contains('keyboard-button')) {
+    let content = e.target.textContent;
     e.target.classList.add('active');
     if (!e.target.classList.contains('special-btn')) {
-      textareaInput.value = value.length === cursorPos
-        ? value + e.target.textContent
-        : value.slice(0, cursorPos) + e.target.textContent + value.slice(cursorPos);
-      cursorPos += 1;
+      if (!selected) {
+        textareaInput.value = value.length === cursorPos
+          ? value + e.target.textContent
+          : value.slice(0, cursorPos) + e.target.textContent + value.slice(cursorPos);
+        cursorPos += 1;
+      } else {
+        textareaInput.value = value.slice(0, cursorPos) + content + value.slice(cursorEnd);
+        selected = false;
+        cursorPos += 1;
+      }
     }
     if (e.target.classList.contains('Backspace')) {
       if (!selected) {
@@ -150,11 +160,38 @@ keyboardBody.addEventListener('mousedown', (e) => {
         selected = false;
       }
     }
+    //! Выделение нужно доработать, когда уменшаешь область выделение
     if (e.target.classList.contains('ArrowLeft')) {
-      cursorPos -= 1;
+      if (!e.shiftKey) {
+        cursorPos -= 1;
+        if (cursorPos < 0) {
+          cursorPos = 0;
+        }
+      } else {
+        if (cursorEnd < cursorPos) {
+          cursorEnd = cursorPos;
+        }
+        cursorPos -= 1;
+        if (cursorPos < 0) {
+          cursorPos = 0;
+        }
+        if (cursorPos !== cursorEnd) {
+          selected = true;
+        } else {
+          selected = false;
+        }
+      }
     }
     if (e.target.classList.contains('ArrowRight')) {
-      cursorPos += 1;
+      if (!e.shiftKey) {
+        cursorPos += 1;
+      } else {
+        if (cursorEnd < cursorPos) {
+          cursorEnd = cursorPos;
+        }
+        cursorEnd += 1;
+        selected = true;
+      }
     }
     if (e.target.classList.contains('Enter')) {
       textareaInput.value = value.length === cursorPos
@@ -163,18 +200,20 @@ keyboardBody.addEventListener('mousedown', (e) => {
       cursorPos += 1;
     }
   }
-  console.log(selected)
+  console.log(selected);
   console.log(cursorPos, cursorEnd);
 });
 
 document.addEventListener('mouseup', () => {
   setTimeout(() => {
-    textareaInput.setSelectionRange(cursorPos, cursorPos);
-    textareaInput.focus();
+    if (!selected) {
+      textareaInput.setSelectionRange(cursorPos, cursorPos);
+      textareaInput.focus();
+      selected = false;
+    }
+    if (selected) {
+      textareaInput.setSelectionRange(cursorPos, cursorEnd);
+    }
     document.querySelectorAll('.keyboard-button').forEach(button => button.classList.remove('active'));
-  }, 200);
+  }, 0);
 });
-
-
-
-
