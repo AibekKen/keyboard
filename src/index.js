@@ -87,9 +87,7 @@ textareaInput.addEventListener('select', () => {
 
 document.addEventListener('keydown', (e) => {
   document.querySelector('#' + e.code).classList.add('active');
-  if (e.key.length < 2) {
-    textareaInput.setSelectionRange(cursorPos, cursorPos);
-    textareaInput.focus();
+  if (e.key.length < 2 || e.code === 'Enter') {
     cursorPos += 1;
   }
   if (e.code === 'Backspace' || e.code === 'ArrowLeft') {
@@ -98,13 +96,24 @@ document.addEventListener('keydown', (e) => {
   }
   if (e.code === 'ArrowRight' && cursorPos !== textareaInput.value.length) {
     cursorPos += 1;
-
   }
-
   console.log(cursorPos);
 });
 
 document.addEventListener('keyup', (e) => {
+  if (e.code === 'ArrowUp' && cursorPos !== 0) {
+    let { start, end } = getCursorPos(textareaInput);
+    cursorPos = start;
+    cursorEnd = end;
+    selected = false;
+  }
+  if (e.code === 'ArrowDown' && textareaInput.value.length !== cursorPos) {
+    let { start, end } = getCursorPos(textareaInput);
+    cursorPos = start;
+    cursorEnd = end;
+    console.log(cursorPos, cursorEnd)
+    selected = false;
+  }
   document.querySelector('#' + e.code).classList.remove('active');
 });
 
@@ -119,16 +128,16 @@ keyboardBody.addEventListener('mousedown', (e) => {
       cursorPos += 1;
     }
     if (e.target.classList.contains('Backspace')) {
-      if (cursorPos !== 0) {
-        if (!selected) {
+      if (!selected) {
+        if (cursorPos !== 0) {
           textareaInput.value = value.length === cursorPos
             ? value.slice(0, cursorPos - 1)
-            : value.slice(0, cursorPos - 1) + value.slice(cursorPos)
+            : value.slice(0, cursorPos - 1) + value.slice(cursorPos);
           cursorPos -= 1;
-        } else {
-          textareaInput.value = value.slice(0, cursorPos) + value.slice(cursorEnd);
-          selected = false;
         }
+      } else {
+        textareaInput.value = value.slice(0, cursorPos) + value.slice(cursorEnd);
+        selected = false;
       }
     }
     if (e.target.classList.contains('Delete')) {
@@ -154,7 +163,8 @@ keyboardBody.addEventListener('mousedown', (e) => {
       cursorPos += 1;
     }
   }
-  console.log(cursorPos);
+  console.log(selected)
+  console.log(cursorPos, cursorEnd);
 });
 
 document.addEventListener('mouseup', () => {
