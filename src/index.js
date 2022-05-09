@@ -25,7 +25,12 @@ if (localStorage.capsLock !== undefined) {
 }
 createKButton(keyboardBody);
 
-let lang = 'en';
+let lang;
+if (localStorage.lang) {
+  lang = 'en';
+} else {
+  lang = localStorage.getItem('lang');
+}
 
 function getCursorPos(input) {
   let pos;
@@ -78,38 +83,61 @@ textareaInput.addEventListener('click', () => {
   console.log(start, end);
 });
 
-document.addEventListener('keydown', (e) => {
-  if (e.ctrlKey && e.altKey) {
-    if (lang === 'en') {
-      lang = 'ru';
-      buttons.forEach((el, i) => {
-        if (KeyboardButtonsArr[i].keyRu !== undefined) {
-          buttons[i].textContent = KeyboardButtonsArr[i].keyRu;
-        }
-      });
-    } else {
-      lang = 'en';
-      buttons.forEach((el, i) => {
-        if (KeyboardButtonsArr[i].keyRu !== undefined) {
-          buttons[i].textContent = KeyboardButtonsArr[i].key;
-        }
-      });
-    }
-    console.log(lang);
+document.addEventListener('DOMContentLoaded', () => {
+  lang = localStorage.getItem('lang');
+  if (lang === 'ru') {
+    buttons.forEach((el, i) => {
+      if (KeyboardButtonsArr[i].keyRu !== undefined) {
+        buttons[i].textContent = KeyboardButtonsArr[i].keyRu;
+      }
+    });
   }
-  if (shiftMode) {
-    KeyboardButtonsArr.forEach((k) => {
-      if (k.shiftKey) {
-        if (k.key === e.key) {
+});
+
+document.addEventListener('keydown', (e) => {
+  lang = localStorage.getItem('lang')
+  console.log(lang)
+  if (/[а-яёЧЯ.* +?^ ${}() | [\]\\]/i.test(e.key)) {
+    console.log(selected);
+    e.preventDefault();
+    let content = document.querySelector('#' + e.code).textContent;
+    let value = textareaInput.value;
+    if (e.shiftKey && !e.getModifierState('CapsLock')) {
+      content = content.toUpperCase();
+    }
+    if (e.shiftKey && e.getModifierState('CapsLock')) {
+      content = content.toLowerCase();
+    }
+    if (!selected) {
+      textareaInput.value = value.length === cursorPos
+        ? value + content
+        : value.slice(0, cursorPos) + content + value.slice(cursorPos);
+    } else {
+      textareaInput.value = value.slice(0, cursorPos) + content + value.slice(cursorEnd);
+      selected = false;
+    }
+  }
+  if (lang === 'ru') {
+    KeyboardButtonsArr.forEach((k, i) => {
+      if (k.keyRu) {
+        if (k.key === e.key.toLowerCase()) {
           e.preventDefault();
+
           let value = textareaInput.value;
+          let content = buttons[i].textContent;
+          if (e.shiftKey && !e.getModifierState('CapsLock')) {
+            content = content.toUpperCase();
+          }
+          if (e.shiftKey && e.getModifierState('CapsLock')) {
+            content = content.toLowerCase();
+          }
           if (!selected) {
             textareaInput.value = value.length === cursorPos
-              ? value + k.shiftKey
-              : value.slice(0, cursorPos) + k.shiftKey + value.slice(cursorPos);
+              ? value + content
+              : value.slice(0, cursorPos) + content + value.slice(cursorPos);
             cursorPos += 1;
           } else {
-            textareaInput.value = value.slice(0, cursorPos) + k.shiftKey + value.slice(cursorEnd);
+            textareaInput.value = value.slice(0, cursorPos) + content + value.slice(cursorEnd);
             selected = false;
             cursorPos += 1;
           }
@@ -117,7 +145,66 @@ document.addEventListener('keydown', (e) => {
       }
     });
   }
-  const letters = document.querySelectorAll('.keyboard-letter');
+  if (e.ctrlKey && e.altKey) {
+    if (lang === 'en') {
+      lang = 'ru';
+      localStorage.setItem('lang', lang);
+      buttons.forEach((el, i) => {
+        if (KeyboardButtonsArr[i].keyRu !== undefined) {
+          buttons[i].textContent = KeyboardButtonsArr[i].keyRu;
+        }
+      });
+    } else {
+      lang = 'en';
+      localStorage.setItem('lang', lang);
+      buttons.forEach((el, i) => {
+        if (KeyboardButtonsArr[i].keyRu !== undefined) {
+          buttons[i].textContent = KeyboardButtonsArr[i].key;
+        }
+      });
+    }
+  }
+  if (shiftMode) {
+    if (lang === 'ru') {
+      KeyboardButtonsArr.forEach((k) => {
+        if (k.shiftKey) {
+          if (k.key === e.key && !k.keyRu) {
+            e.preventDefault();
+            let value = textareaInput.value;
+            if (!selected) {
+              textareaInput.value = value.length === cursorPos
+                ? value + k.shiftKey
+                : value.slice(0, cursorPos) + k.shiftKey + value.slice(cursorPos);
+              cursorPos += 1;
+            } else {
+              textareaInput.value = value.slice(0, cursorPos) + k.shiftKey + value.slice(cursorEnd);
+              selected = false;
+              cursorPos += 1;
+            }
+          }
+        }
+      });
+    } else {
+      KeyboardButtonsArr.forEach((k) => {
+        if (k.shiftKey) {
+          if (k.key === e.key) {
+            e.preventDefault();
+            let value = textareaInput.value;
+            if (!selected) {
+              textareaInput.value = value.length === cursorPos
+                ? value + k.shiftKey
+                : value.slice(0, cursorPos) + k.shiftKey + value.slice(cursorPos);
+              cursorPos += 1;
+            } else {
+              textareaInput.value = value.slice(0, cursorPos) + k.shiftKey + value.slice(cursorEnd);
+              selected = false;
+              cursorPos += 1;
+            }
+          }
+        }
+      });
+    }
+  }
   if (e.key === 'Shift') {
     shiftMode = true;
     if (lang === 'en') {
@@ -137,9 +224,11 @@ document.addEventListener('keydown', (e) => {
   capsLock = e.getModifierState('CapsLock');
   localStorage.capsLock = capsLock;
 
-  letters.forEach((letter) => {
-    let content = letter.textContent;
-    letter.textContent = capsLock ? content.toUpperCase() : content.toLowerCase();
+  buttons.forEach((b, i) => {
+    if (b.textContent.length < 3) {
+      let content = b.textContent;
+      buttons[i].textContent = capsLock ? content.toUpperCase() : content.toLowerCase();
+    }
   });
   if (cursorPos === cursorEnd) {
     textareaInput.setSelectionRange(cursorPos, cursorPos);
@@ -170,8 +259,21 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('keyup', (e) => {
+  if (/[а-яёЧЯ.* +?^ ${}() | [\]\\]/i.test(e.key)) {
+    setTimeout(() => {
+      if (!selected) {
+        textareaInput.setSelectionRange(cursorPos, cursorPos);
+        textareaInput.focus();
+        selected = false;
+      }
+      if (selected) {
+        textareaInput.setSelectionRange(cursorPos, cursorEnd);
+        selected = true;
+      }
+    }, 0);
+  }
   if (e.key === 'Shift') {
-    shiftMode = true;
+    shiftMode = false;
     if (lang === 'en') {
       KeyboardButtonsArr.forEach((key, i) => {
         if (key.shiftKey) {
@@ -202,6 +304,8 @@ document.addEventListener('keyup', (e) => {
 });
 
 keyboardBody.addEventListener('mousedown', (e) => {
+  lang = localStorage.getItem('lang')
+  console.log(lang)
   let value = textareaInput.value;
   if (e.target.classList.contains('keyboard-button')) {
     let content = e.target.textContent;
@@ -253,10 +357,12 @@ keyboardBody.addEventListener('mousedown', (e) => {
       } else {
         capsLock = true;
       }
-      localStorage.capsLock = capsLock;
-      const letters = document.querySelectorAll('.keyboard-letter');
-      letters.forEach((letter) => {
-        letter.textContent = capsLock ? content.toUpperCase() : content.toLowerCase();
+      localStorage.setItem('capsLock', capsLock);
+      buttons.forEach((key, i) => {
+        let char = buttons[i].textContent
+        if (!key.classList.contains('special-btn')) {
+          buttons[i].textContent = capsLock ? char.toUpperCase() : char.toLowerCase();
+        }
       });
     }
     if (e.target.classList.contains('Tab')) {
@@ -315,6 +421,29 @@ keyboardBody.addEventListener('mousedown', (e) => {
         selected = true;
       }
     }
+    if (e.target.classList.contains('ArrowUp')) {
+      let contentN = textareaInput.value.slice(0, cursorPos);
+      let n = 0;
+      contentN = contentN.split('').reverse();
+      console.log(contentN)
+      for (let i = 0; i < contentN.length; i++) {
+        if (contentN[i] === '\n') {
+          cursorPos -= i + 1;
+          return;
+        }
+      }
+    }
+    if (e.target.classList.contains('ArrowDown')) {
+      let contentN = textareaInput.value.slice(cursorPos);
+      contentN = contentN.split('');
+      console.log(contentN)
+      for (let i = 0; i < contentN.length; i++) {
+        if (contentN[i] === '\n') {
+          cursorPos += i + 1;
+          return;
+        }
+      }
+    }
     if (e.target.classList.contains('Enter')) {
       textareaInput.value = value.length === cursorPos
         ? value + '\n'
@@ -322,8 +451,6 @@ keyboardBody.addEventListener('mousedown', (e) => {
       cursorPos += 1;
     }
   }
-  console.log(selected);
-  console.log(cursorPos, cursorEnd);
 });
 
 document.addEventListener('mouseup', () => {
